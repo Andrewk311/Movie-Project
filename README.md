@@ -1,6 +1,6 @@
 # Movie Project for Capital One Summit 2021
 
-This project was made during Capital One's MindSumo challenge for the 20201 Summit application using the OMDB api
+This project was made during Capital One's MindSumo challenge for the 2021 Summit application using the OMDB api
 
 ### Build Instructions:
 * Clone the repo 
