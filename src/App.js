@@ -196,7 +196,7 @@ function App(){
                             <TableFooter>
                                 <TableRow>
                                     <TablePagination
-                                        rowsPerPageOptions = {[5, 10, {label: 'All', value: -1}]}
+                                        rowsPerPageOptions = {[5, 10]}
                                         count={rows.length}
                                         rowsPerPage={rowsPerPage}
                                         page={pageNumber-1}
