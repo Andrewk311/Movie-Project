@@ -16,7 +16,7 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import Box from '@material-ui/core/Box';
 
-function createData(Title, Year, imdbID) {      //
+function createData(Title, Year, imdbID) {      
     return {Title, Year, imdbID}
 }
 
@@ -67,7 +67,7 @@ function App(){
             }
 
         if (rowsPerPage === 5){                                    
-            axios.get(`http://www.omdbapi.com/?s=${search}&type=movie&page=${((pageNumber+1)/2)}&apikey=${API_KEY}`)  //checks next available page in pagination of 5 
+            axios.get(`http://www.omdbapi.com/?s=${search}&type=movie&page=${((pageNumber+2)/2)}&apikey=${API_KEY}`)  //checks next available page in pagination of 5 
                 .then(res => {
                     if(res == null || res.data == null || res.data.Search == null){
                         setNextPageData(false);
@@ -196,7 +196,7 @@ function App(){
                             <TableFooter>
                                 <TableRow>
                                     <TablePagination
-                                        rowsPerPageOptions = {[5, 10, 20, {label: 'All', value: -1}]}
+                                        rowsPerPageOptions = {[5, 10, {label: 'All', value: -1}]}
                                         count={rows.length}
                                         rowsPerPage={rowsPerPage}
                                         page={pageNumber-1}
