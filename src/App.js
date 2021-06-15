@@ -39,14 +39,14 @@ function App(){
     const [nextPageData, setNextPageData] = useState(true);
     const prevSearch = usePrevious(search)
     const API_KEY = "7c60f5fa"
-    const url = `http://www.omdbapi.com/?s=${search}&type=movie&page=${pageNumber}&apikey=${API_KEY}`;
+    const url = `https://www.omdbapi.com/?s=${search}&type=movie&page=${pageNumber}&apikey=${API_KEY}`;
    
 
     const getMovie = e => {         //this calls the api again with a new page number every time it changes due to useeffect calling it
         setNextPageData(true);
         setVisible(true);
         if (rowsPerPage === 10){  
-            axios.get(`http://www.omdbapi.com/?s=${search}&type=movie&page=${pageNumber+1}&apikey=${API_KEY}`)  //checks if the next page contains any movies in order to disable increasePage
+            axios.get(`https://www.omdbapi.com/?s=${search}&type=movie&page=${pageNumber+1}&apikey=${API_KEY}`)  //checks if the next page contains any movies in order to disable increasePage
                 .then(res => {
                     if(res == null || res.data == null || res.data.Search == null){
                         setNextPageData(false);
@@ -67,7 +67,7 @@ function App(){
             }
 
         if (rowsPerPage === 5){                                    
-            axios.get(`http://www.omdbapi.com/?s=${search}&type=movie&page=${((pageNumber+2)/2)}&apikey=${API_KEY}`)  //checks next available page in pagination of 5 
+            axios.get(`https://www.omdbapi.com/?s=${search}&type=movie&page=${((pageNumber+2)/2)}&apikey=${API_KEY}`)  //checks next available page in pagination of 5 
                 .then(res => {
                     if(res == null || res.data == null || res.data.Search == null){
                         setNextPageData(false);
@@ -76,7 +76,7 @@ function App(){
             if (((rows.length/rowsPerPage) >= pageNumber) && (search === prevSearch)){   
                 return; 
             }
-            axios.get(`http://www.omdbapi.com/?s=${search}&type=movie&page=${(pageNumber+1)/2}&apikey=${API_KEY}`)      
+            axios.get(`https://www.omdbapi.com/?s=${search}&type=movie&page=${(pageNumber+1)/2}&apikey=${API_KEY}`)      
                 .then(response => {
                     if(response == null || response.data == null || response.data.Search == null) return;
                         for(let i = 0; i < response.data.Search.length; i++){
@@ -105,7 +105,7 @@ function App(){
 
     function handleRowClick(event, row){    //when clicking on a movie, gets the specific movie data and replaces the table
         setVisible(false);
-        axios.get(`http://www.omdbapi.com/?i=${row.imdbID}&apikey=7c60f5fa`)
+        axios.get(`https://www.omdbapi.com/?i=${row.imdbID}&apikey=7c60f5fa`)
             .then(res => {
                 setMovieInstance(res.data);
             })
