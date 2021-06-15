@@ -6,7 +6,7 @@ This project was made during Capital One's MindSumo challenge for the 2021 Summi
 * Clone the repo 
 * Run `npm install`
 * Run `npm start`
-* To view it in the browser, visit http://localhost:3000
+* To view this in the browser, visit http://localhost:3000
 
 ### To View the Application: 
 [App](https://andrewk311.github.io/Movie-Project/)
