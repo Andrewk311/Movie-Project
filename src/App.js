@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 let rows = [];
 
+
 function App(){
     const [search, setSearch] = useState('');
     const [movie, setMovie] = useState({});
@@ -43,6 +44,7 @@ function App(){
    
 
     const getMovie = e => {         //this calls the api again with a new page number every time it changes due to useeffect calling it
+        if(rowsPerPage === -1) rows = []; 
         setNextPageData(true);
         setVisible(true);
         if (rowsPerPage === 10){  
@@ -85,6 +87,23 @@ function App(){
                     setMovie(response.data);
                 });
         }
+
+        if (rowsPerPage === -1){
+            for(let i = 0; i <= 100; i++){
+                axios.get(`https://www.omdbapi.com/?s=${search}&type=movie&page=${(pageNumber)+i}&apikey=${API_KEY}`)      
+                .then(response => {
+                    if(response == null || response.data == null || response.data.Search == null){
+                        return; 
+                    }
+                    for(let i = 0; i < response.data.Search.length; i++){
+                        rows.push(createData(response.data.Search[i].Title, response.data.Search[i].Year, response.data.Search[i].imdbID));
+                    }
+                    setMovie(response.data);
+            });
+            }
+            console.log(rows.length);
+            setNextPageData(false);
+        }
     }
 
     function increasePage(){
@@ -111,7 +130,7 @@ function App(){
             })
     }
 
-    const handleChangeRowsPerPage = (event) => {            //changes the number of rows per page 
+    const handleChangeRowsPerPage = (event) => {            //changes the number of rows per page and sets the page number to 1
         setRowsPerPage(parseInt(event.target.value, 10))
         setPageNumber(1);
     }
@@ -123,6 +142,17 @@ function App(){
     useEffect(() => {   //calls getMovie every time the page number changes, showing a new list
         getMovie();
     }, [pageNumber]);   
+
+    useEffect(() => {   //calls allResults when rowsPerPage changes 
+        allResults();
+    }, [rowsPerPage]);
+
+    function allResults(){          //if rowsPerPage is set to 'All', the entire list gets loaded instantly
+        if (rowsPerPage === -1){
+            rows=[];
+            getMovie();
+        }
+    }
 
     function usePrevious(value) {   //used to store the previous search
         const ref = useRef();
@@ -196,9 +226,9 @@ function App(){
                             <TableFooter>
                                 <TableRow>
                                     <TablePagination
-                                        rowsPerPageOptions = {[5, 10]}
+                                        rowsPerPageOptions = {[5, 10, {label: 'All', value: -1}]}
                                         count={rows.length}
-                                        rowsPerPage={rowsPerPage}
+                                        rowsPerPage={rowsPerPage} //this not changing 
                                         page={pageNumber-1}
                                         onChangeRowsPerPage={handleChangeRowsPerPage}
                                         ActionsComponent={TablePaginationActions}
