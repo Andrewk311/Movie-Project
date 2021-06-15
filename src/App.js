@@ -16,24 +16,11 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import Box from '@material-ui/core/Box';
 
-
-//figure out how to block increasing when there are no more results
-//one solution: do another get that is 1 page ahead, and if there are no results in that array, dont allow any more next
-//problem with this is if using pagination the results would be in blocks of 10 but i may be searching with 5 results per page
-//second solution: load up every page available into another array and if the current is not there yet, allow it to proceed
-//problem with this: waste of space, should only put for how far the user is willing to search
-
-function createData(Title, Year, imdbID) {
+function createData(Title, Year, imdbID) {      //
     return {Title, Year, imdbID}
 }
 
-const useStyles = makeStyles({
-    table: {
-        minWidth:650
-    },
-});
-
-const useStyles1 = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({
     root: {
       flexShrink: 0,
       marginLeft: theme.spacing(2.5),
@@ -55,17 +42,17 @@ function App(){
     const url = `http://www.omdbapi.com/?s=${search}&type=movie&page=${pageNumber}&apikey=${API_KEY}`;
    
 
-    const getMovie = e => {
+    const getMovie = e => {         //this calls the api again with a new page number every time it changes due to useeffect calling it
         setNextPageData(true);
         setVisible(true);
         if (rowsPerPage === 10){  
-            axios.get(`http://www.omdbapi.com/?s=${search}&type=movie&page=${pageNumber+1}&apikey=${API_KEY}`)
+            axios.get(`http://www.omdbapi.com/?s=${search}&type=movie&page=${pageNumber+1}&apikey=${API_KEY}`)  //checks if the next page contains any movies in order to disable increasePage
                 .then(res => {
                     if(res == null || res.data == null || res.data.Search == null){
                         setNextPageData(false);
                     }
                 })
-            console.log(`page number in getmovie is ${pageNumber}`)
+
             if (((rows.length/rowsPerPage) >= pageNumber) && (search === prevSearch)){   
                 return; 
             }
@@ -75,19 +62,17 @@ function App(){
                         for(let i = 0; i < response.data.Search.length; i++){
                             rows.push(createData(response.data.Search[i].Title, response.data.Search[i].Year, response.data.Search[i].imdbID));
                         }
-                        console.log(response.data)
                     setMovie(response.data);
                 });
             }
 
-        if (rowsPerPage === 5){
-            axios.get(`http://www.omdbapi.com/?s=${search}&type=movie&page=${((pageNumber+1)/2)}&apikey=${API_KEY}`)
+        if (rowsPerPage === 5){                                    
+            axios.get(`http://www.omdbapi.com/?s=${search}&type=movie&page=${((pageNumber+1)/2)}&apikey=${API_KEY}`)  //checks next available page in pagination of 5 
                 .then(res => {
                     if(res == null || res.data == null || res.data.Search == null){
                         setNextPageData(false);
                     }
                 })
-            console.log(`page number in getmovie is ${(pageNumber+1)/2}`)
             if (((rows.length/rowsPerPage) >= pageNumber) && (search === prevSearch)){   
                 return; 
             }
@@ -97,14 +82,12 @@ function App(){
                         for(let i = 0; i < response.data.Search.length; i++){
                             rows.push(createData(response.data.Search[i].Title, response.data.Search[i].Year, response.data.Search[i].imdbID));
                         }
-                        console.log(response.data)
                     setMovie(response.data);
                 });
         }
     }
 
     function increasePage(){
-        
         if(pageNumber >= 100 || nextPageData === false){
             return;
         }
@@ -120,7 +103,7 @@ function App(){
         setPageNumber(pageNumber => pageNumber - 1);  
     }
 
-    function handleRowClick(event, row){
+    function handleRowClick(event, row){    //when clicking on a movie, gets the specific movie data and replaces the table
         setVisible(false);
         axios.get(`http://www.omdbapi.com/?i=${row.imdbID}&apikey=7c60f5fa`)
             .then(res => {
@@ -128,7 +111,7 @@ function App(){
             })
     }
 
-    const handleChangeRowsPerPage = (event) => {
+    const handleChangeRowsPerPage = (event) => {            //changes the number of rows per page 
         setRowsPerPage(parseInt(event.target.value, 10))
         setPageNumber(1);
     }
@@ -137,11 +120,11 @@ function App(){
         checkData(movieInstance);
     }, [movieInstance]);
 
-    useEffect(() => {
+    useEffect(() => {   //calls getMovie every time the page number changes, showing a new list
         getMovie();
-    }, [pageNumber]);   //called getMovie every time page number changes, showing a new list
+    }, [pageNumber]);   
 
-    function usePrevious(value) {
+    function usePrevious(value) {   //used to store the previous search
         const ref = useRef();
         useEffect(() => {
           ref.current = value;
@@ -149,7 +132,7 @@ function App(){
         return ref.current;
       }
 
-    const newSearch = (e) => {
+    const newSearch = (e) => {          //searches if enter is pressed, page number only changes if the search is different than the previous one.
         if (e.key === "Enter"){ 
             if (search === prevSearch){
                 getMovie();
@@ -161,13 +144,13 @@ function App(){
             }
         }
     }
-    const onInputChange = e => {     
+    const onInputChange = e => {        //changes the search state every time a new key is pressed in the search bar
         setSearch(e.target.value);
     }
 
-    function TablePaginationActions(){
+    function TablePaginationActions(){     //adds the buttons next page and previous page
         
-        const classes = useStyles1();
+        const classes = useStyles();
         const theme = useTheme();
 
         return (
@@ -188,7 +171,7 @@ function App(){
     function checkData(movie){
         if(movie.Response === "True" && visible === true){
             return(
-                <Box className="Box" display="flex" flexDirection="row" justifyContent="center">
+                <Box className="Box" display="flex" flexDirection="row" justifyContent="center">       {/* Adds flex to the website for mobile support */}
                     <TableContainer className ={Table} component={Paper}>
                         <Table className={Table} aria-label="simple table">
                             <TableHead>
