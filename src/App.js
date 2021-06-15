@@ -14,6 +14,8 @@ import TableFooter from '@material-ui/core/TableFooter';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import Box from '@material-ui/core/Box';
+
 
 //figure out how to block increasing when there are no more results
 //one solution: do another get that is 1 page ahead, and if there are no results in that array, dont allow any more next
@@ -48,7 +50,6 @@ function App(){
     const [visible, setVisible] = useState(true);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [nextPageData, setNextPageData] = useState(true);
-    const classes = useStyles();
     const prevSearch = usePrevious(search)
     const API_KEY = "7c60f5fa"
     const url = `http://www.omdbapi.com/?s=${search}&type=movie&page=${pageNumber}&apikey=${API_KEY}`;
@@ -64,20 +65,42 @@ function App(){
                         setNextPageData(false);
                     }
                 })
+            console.log(`page number in getmovie is ${pageNumber}`)
+            if (((rows.length/rowsPerPage) >= pageNumber) && (search === prevSearch)){   
+                return; 
             }
-        console.log(`page number in getmovie is ${pageNumber}`)
-        if (((rows.length/rowsPerPage) >= pageNumber) && (search === prevSearch)){   
-            return; 
-        }
-        axios.get(url)
-            .then(response => {
-                if(response == null || response.data == null || response.data.Search == null) return;
-                    for(let i = 0; i < response.data.Search.length; i++){
-                        rows.push(createData(response.data.Search[i].Title, response.data.Search[i].Year, response.data.Search[i].imdbID));
+            axios.get(url)      
+                .then(response => {
+                    if(response == null || response.data == null || response.data.Search == null) return;
+                        for(let i = 0; i < response.data.Search.length; i++){
+                            rows.push(createData(response.data.Search[i].Title, response.data.Search[i].Year, response.data.Search[i].imdbID));
+                        }
+                        console.log(response.data)
+                    setMovie(response.data);
+                });
+            }
+
+        if (rowsPerPage === 5){
+            axios.get(`http://www.omdbapi.com/?s=${search}&type=movie&page=${((pageNumber+1)/2)}&apikey=${API_KEY}`)
+                .then(res => {
+                    if(res == null || res.data == null || res.data.Search == null){
+                        setNextPageData(false);
                     }
-                    console.log(response.data)
-                setMovie(response.data);
-            });
+                })
+            console.log(`page number in getmovie is ${(pageNumber+1)/2}`)
+            if (((rows.length/rowsPerPage) >= pageNumber) && (search === prevSearch)){   
+                return; 
+            }
+            axios.get(`http://www.omdbapi.com/?s=${search}&type=movie&page=${(pageNumber+1)/2}&apikey=${API_KEY}`)      
+                .then(response => {
+                    if(response == null || response.data == null || response.data.Search == null) return;
+                        for(let i = 0; i < response.data.Search.length; i++){
+                            rows.push(createData(response.data.Search[i].Title, response.data.Search[i].Year, response.data.Search[i].imdbID));
+                        }
+                        console.log(response.data)
+                    setMovie(response.data);
+                });
+        }
     }
 
     function increasePage(){
@@ -138,7 +161,6 @@ function App(){
             }
         }
     }
-//use hashset 
     const onInputChange = e => {     
         setSearch(e.target.value);
     }
@@ -166,43 +188,43 @@ function App(){
     function checkData(movie){
         if(movie.Response === "True" && visible === true){
             return(
-                <TableContainer className = {"Table"} component={Paper}>
-                    <Table className={classes.table} aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell componenet="th" scope="row">Movie Name</TableCell>
-                                <TableCell  align="right">Release Year</TableCell>
-                                <TableCell  align="right">imdbID</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                           {(rowsPerPage > 0
-                            ? rows.slice((pageNumber-1) * rowsPerPage, (pageNumber-1) * rowsPerPage + rowsPerPage)
-                            : rows
-                            ).map((row) => ( 
-                               <TableRow hover onClick={(event) => handleRowClick(event,row)} key={row.imdbID}>
-                                   <TableCell componenet="th" scope="row">
-                                       {row.Title}
-                                   </TableCell>
-                                   <TableCell style={{width: '200px'}} align="right">{row.Year} </TableCell>
-                                   <TableCell style={{width: '150px'}} align="right">{row.imdbID}</TableCell>
-                               </TableRow>
-                           ))}
-                        </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TablePagination
-                                    rowsPerPageOptions = {[5, 10, 20, {label: 'All', value: -1}]}
-                                    count={rows.length}
-                                    rowsPerPage={rowsPerPage}
-                                    page={pageNumber-1}
-                                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                                    ActionsComponent={TablePaginationActions}
-                                    />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
-                </TableContainer>
+                <Box className="Box" display="flex" flexDirection="row" justifyContent="center">
+                    <TableContainer className ={Table} component={Paper}>
+                        <Table className={Table} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell componenet="th" scope="row"><b>Movie Name</b></TableCell>
+                                    <TableCell style={{width: 125 }} align="left"><b>Release Year</b></TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                            {(rowsPerPage > 0
+                                ? rows.slice((pageNumber-1) * rowsPerPage, (pageNumber-1) * rowsPerPage + rowsPerPage)
+                                : rows
+                                ).map((row) => ( 
+                                <TableRow hover onClick={(event) => handleRowClick(event,row)} key={row.imdbID}>
+                                    <TableCell componenet="th" scope="row">
+                                        {row.Title}
+                                    </TableCell>
+                                    <TableCell style={{width: 125}} align="center">{row.Year} </TableCell>
+                                </TableRow>
+                            ))}
+                            </TableBody>
+                            <TableFooter>
+                                <TableRow>
+                                    <TablePagination
+                                        rowsPerPageOptions = {[5, 10, 20, {label: 'All', value: -1}]}
+                                        count={rows.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={pageNumber-1}
+                                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                                        ActionsComponent={TablePaginationActions}
+                                        />
+                                </TableRow>
+                            </TableFooter>
+                        </Table>
+                    </TableContainer>
+                </Box>
             );
         }
         else if (movie.Response === "True"){
