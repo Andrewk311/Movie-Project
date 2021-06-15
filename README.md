@@ -9,4 +9,4 @@ This project was made during Capital One's MindSumo challenge for the 2021 Summi
 * To view this in the browser, visit http://localhost:3000
 
 ### To View the Application: 
-[App](https://andrewk311.github.io/Movie-Project/)
+[Movie-Project](https://andrewk311.github.io/Movie-Project/)
