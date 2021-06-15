@@ -60,7 +60,7 @@ section {
     box-shadow: 0px 0px 8px 3px #88b8ff;
 }
 
-.Table {
+.Box {
     padding: 5px;
 
 }
@@ -75,4 +75,14 @@ section {
     color:#88b8ff;
     cursor: pointer;
     padding: 10px;
+}
+
+.Table{
+    width:95%;
+}
+
+.Box {
+    display:flex; 
+    flex-direction: "row";
+    justify-content: "center";
 }
